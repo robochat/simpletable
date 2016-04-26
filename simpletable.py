@@ -39,25 +39,14 @@ class Table(list):
             if key in self.headers:
                 pos = self.headers.index(key)
                 for i,(row,val) in enumerate(zip(self,value)):
-                    #Add code here to handle row types other than list and tuple
-                    if type(row) == list: 
-                        row[pos] = val
-                    elif type(row) == tuple:
-                        newrow = row[:pos] + (val,) + row[pos+1:] #should I respect immutability of tuple?
-                        super(Table,self).__setitem__(i,newrow)
-                    else:
-                        raise TypeError('row entry is an unhandled sequence type')
+                    row[pos] = val
+                    #super(Table,self).__setitem__(i,row)
             else:
                 self.headers.append(key)
-                for i,(row,val) in enumerate(zip(self,value)): 
-                    #Add code here to handle row types other than list and tuple
-                    if type(row) == list: 
-                        row.append(val)
-                    elif type(row) == tuple:
-                        newrow = row + (val,) #should I respect immutability of tuple?
-                        super(Table,self).__setitem__(i,newrow)
-                    else:
-                        raise TypeError('row entry is an unhandled sequence type')
+                for i,(row,val) in enumerate(zip(self,value)):
+                    row += [val]
+                    #row.append(val)
+                    #super(Table,self).__setitem__(i,row)
         else:
             super(Table,self).__setitem__(key,value)
     
