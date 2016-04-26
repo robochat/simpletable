@@ -74,3 +74,4 @@ class Table(list):
         width = len(self[0])
         assert len(self.headers) == width, 'headers and row lengths are not equal'
         for i,r in enumerate(self): assert len(r) == width, 'row %d length differs from previous rows' %i
+        return True
