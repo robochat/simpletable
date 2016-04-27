@@ -112,6 +112,7 @@ class ColTable(object):
     def __setitem__(self, key, value):
         if isinstance(key, str) or isinstance(key, unicode):
             self.cols[key] = value
+            self.validate()
         else:
             if len(value) != len(self.cols): raise ValueError('row update does not have enough columns')
             for col,v in zip(self.cols,value):
