@@ -12,6 +12,10 @@ from ordereddict import OrderedDict
 from collections import Sequence,Mapping,Iterable,Hashable
 #import warnings
 
+#TO DO:
+#extra methods: slicing by row, insertions, 
+#returning OrderedDicts for rows?
+
 class ColTable(object):
     """A very simple table class that supports index and column indexing.
     Stores data by columns."""    
