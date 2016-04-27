@@ -15,6 +15,7 @@ from collections import Sequence,Mapping,Iterable,Hashable
 #TO DO:
 #extra methods: slicing by row, insertions, 
 #returning OrderedDicts for rows?
+#accept a sequence of column sequences?? how to do this without being too magical?
 
 class ColTable(object):
     """A very simple table class that supports index and column indexing.
