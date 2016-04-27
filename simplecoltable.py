@@ -91,7 +91,7 @@ class ColTable(object):
                 if len(headers) != len(datadict):
                     raise ValueError('headers length does not match length of supplied data')
                 else:
-                    self.cols = OrderedDict((h,datadict[h]) for h in headers)
+                    datadict = OrderedDict((h,datadict[h]) for h in headers)
 
         self.cols= datadict
         self.validate()
