@@ -128,14 +128,9 @@ class ColTable(object):
         """append a row to the table"""
         if len(value) != len(self.cols): raise ValueError('row update does not have enough columns')
         for (key,col),v in zip(self.cols.iteritems(),value):
-            #Add code here to handle row types other than list and tuple
-            if type(col) == list:
-                col.append(v)
-            elif type(col) == tuple:
-                newcol = col + (v,)
-                self.cols[key] = newcol
-            else:
-                TypeError('row entry is an unhandled sequence type')
+            #Add code here to handle row types other than list
+            col.append(v)
+            #self.cols[key] = col
 
     def __repr__(self):
         try:
