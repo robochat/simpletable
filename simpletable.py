@@ -35,7 +35,8 @@ class Table(list):
     
     def __setitem__(self, key, value):
         if isinstance(key, str) or isinstance(key, unicode):
-            assert len(value) == len(self), 'new column is not the correct length'
+            if len(value) != len(self):
+                raise ValueError('new column %s is not the correct length for dataset' %str(key))
             if key in self.headers:
                 pos = self.headers.index(key)
                 for i,(row,val) in enumerate(zip(self,value)):
@@ -72,6 +73,6 @@ class Table(list):
     def validate(self):
         """checks that all rows have the same length"""
         width = len(self[0])
-        assert len(self.headers) == width, 'headers and row lengths are not equal'
-        for i,r in enumerate(self): assert len(r) == width, 'row %d length differs from previous rows' %i
+        if len(self.headers) != width: raise AssertionError('headers and row lengths are not equal')
+        for i,r in enumerate(self): if len(r) != width: raise AssertionError('row %d length differs from previous rows' %i)
         return True
