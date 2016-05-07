@@ -168,12 +168,40 @@ class ColTable(object):
                 del col[key]
                 self.cols[h] = col
                 
+    def insertcol(self,index,key,value):
+        """inserted a column of data before index"""
+        #need to create a new OrderedDict
+        headers = self.headers
+        headers.insert(index, key)
+        self[key] = value # append new column onto end
+        newdict = OrderedDict((h,datadict[h]) for h in headers)
+        self.cols = newdict #replace current cols OrderedDict with new one.
+    
+    def insert(self, index, row):
+        """insert row before index"""
+        if len(row) != len(self.cols): raise ValueError('row insert does not have enough columns')
+        for (key,col),v in zip(self.cols.iteritems(),row):
+            #Add code here to handle row types other than list
+            col.insert(index,v)
+            #self.cols[key] = col
+            
     def append(self, row):
         """append a row to the table"""
-        if len(value) != len(self.cols): raise ValueError('row update does not have enough columns')
-        for (key,col),v in zip(self.cols.iteritems(),value):
+        if len(row) != len(self.cols): raise ValueError('row update does not have enough columns')
+        for (key,col),v in zip(self.cols.iteritems(),row):
             #Add code here to handle row types other than list
             col.append(v)
+            #self.cols[key] = col
+    
+    def extend(self, iterable):
+        """extend table by appending rows from the iterable"""
+        widths = (len(row) for row in iterable)
+        width = widths.next()
+        if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns') 
+        if width != len(self.cols): raise ValueError('row insert does not have enough columns')
+        for i,((key,col),v) in enumerate(zip(self.cols.iteritems(),iterable)):
+            #Add code here to handle row types other than list
+            col.extend(index,[row[i] for row in iterable])
             #self.cols[key] = col
 
     def __repr__(self):
