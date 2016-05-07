@@ -144,6 +144,7 @@ class ColTable(object):
             else:
                 raise KeyError
         else:
+            #could also return the row as an OrderedDict or namedtuple
             return tuple(col[key] for col in self.cols.values())
     
     def __setitem__(self, key, value):
@@ -154,6 +155,7 @@ class ColTable(object):
             if len(value) != len(self.cols): raise ValueError('row update does not have enough columns')
             for col,v in zip(self.cols,value):
                 col[key] = v
+            #handle assignment of a mappable object?
     
     def __delitem__(self, key):
         if isinstance(key, str) or isinstance(key, unicode):
