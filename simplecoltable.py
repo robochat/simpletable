@@ -199,7 +199,7 @@ class ColTable(object):
         width = widths.next()
         if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns') 
         if width != len(self.cols): raise ValueError('row insert does not have enough columns')
-        for i,((key,col),v) in enumerate(zip(self.cols.iteritems(),iterable)):
+        for i,(key,col) in enumerate(self.cols.iteritems()):
             #Add code here to handle row types other than list
             col.extend(index,[row[i] for row in iterable])
             #self.cols[key] = col
