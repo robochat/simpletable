@@ -22,7 +22,7 @@ from collections import Sequence,Mapping,Iterable,Hashable
 class ColTable(object):
     """A simple table class that supports index and column indexing.
     Stores data by columns."""    
-    def __init__(self, items=None, rowitems=None, headers=None, title=None, **kwargs):
+    def __init__(self, items=[], rowitems=[], headers=[], title='', **kwargs):
         """Expects either a dictionary of columnar data, a sequence of 
         column orientated data or a sequence of (column-name,column-data)
         tuples. Also accepts keyword arguements (excluding columns named
