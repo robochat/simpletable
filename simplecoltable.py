@@ -216,9 +216,10 @@ class ColTable(object):
         
     def validate(self):
         """checks that all columns have the same length"""
-        lengths = [len(c) for c in self.cols.values()]
-        length = lengths[0]
-        if not all([l == length for l in lengths]): raise AssertionError('Columns do not all have the same length')
+        if len(self.cols):
+            lengths = [len(c) for c in self.cols.values()]
+            length = lengths[0]
+            if not all([l == length for l in lengths]): raise AssertionError('Columns do not all have the same length')
         return True
 
 
