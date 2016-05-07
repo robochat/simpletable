@@ -97,7 +97,7 @@ class ColTable(object):
         
         #columnar data -  iterable of sequences plus supplied header 
         elif (items and isinstance(items,Iterable) 
-                and all(isinstance(item,Iterable for item in items))
+                and all(isinstance(item,Iterable) for item in items)
                 #special exception: if the sequence entries are pairs of (Hashable,Iterable) then probably a 'serialised' dict
                 and not (len(items[0]) ==2 
                         and isinstance(items[0][0],Hashable) 
@@ -127,7 +127,9 @@ class ColTable(object):
             datadict = OrderedDict(items,**kwargs)            
             # Reorder by headers sequence if provided
             if headers:
-                if len(headers) != len(datadict):
+                if len(datadict) == 0:
+                    datadict = OrderedDict((h,[]) for h in headers)
+                elif len(headers) != len(datadict):
                     raise ValueError('headers length does not match length of supplied data')
                 else:
                     datadict = OrderedDict((h,datadict[h]) for h in headers)
