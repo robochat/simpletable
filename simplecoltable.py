@@ -190,3 +190,42 @@ class ColTable(object):
         length = lengths[0]
         if not all([l == length for l in lengths]): raise AssertionError('Columns do not all have the same length')
         return True
+
+
+
+
+def rows2cols(iterable):
+    """takes an iterable of row sequences and returns a list of lists of
+    columnar data."""
+    #checks
+    widths = (len(row) for row in iterable)
+    width = widths.next()
+    if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns')
+    #
+    result = [[row[i] for row in iterable] for i in range(width)]
+    return result
+
+def cols2dict(headers,iterable):
+    """creates a dictionary from sequences of keys and values
+    
+    headers - a sequence of hashable items
+    iterable - a sequence of items (checked to be the same length as headers)
+    """
+    if len(headers) != len(iterable): raise ValueError('headers amd iterable sequences are not of equal length')
+    return dict(zip(headers,iterable))
+
+def rows2dict(headers,iterable):
+    """creates a dictionary from sequences of column names and rows of data
+    
+    headers - a sequence of hashable items
+    iterable - a sequence of rows (checked to be all of the same length)
+    """
+    #checks
+    widths = (len(row) for row in iterable)
+    width = widths.next()
+    if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns')
+    if len(headers) != width: raise ValueError('headers amd dataset are not the same width')
+    #
+    result = dict((key,[row[i] for row in iterable]) for i,key in enumerate(headers))
+    return result
+    
