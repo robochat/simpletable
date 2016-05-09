@@ -25,7 +25,7 @@ class Table(list):
         """        
         list.__init__(self, *args)
         self.title = kwargs.pop('title',None)
-        self._headers = kwargs.pop('headers',[])
+        self._headers = list(kwargs.pop('headers',[]))
         
         if len(set(self._headers)) != len(self._headers): 
             raise ValueError("Class doesn't handle columns with duplicate names")
