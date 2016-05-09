@@ -34,7 +34,7 @@ class Table(list):
         self.validate()
         
     def __getitem__(self, key):
-        if not isinstance(key, int):
+        if not (isinstance(key, int) or isinstance(key, slice)):
             try:
                 pos = self._headers.index(key) # get 'key' index from each data
                 return [row[pos] for row in self]
@@ -45,7 +45,7 @@ class Table(list):
             return super(Table,self).__getitem__(key)
     
     def __setitem__(self, key, value):
-        if not isinstance(key, int):
+        if not (isinstance(key, int) or isinstance(key, slice)):
             if len(value) != len(self):
                 raise ValueError('new column %s is not the correct length for dataset' %str(key))
             if key in self._headers:
@@ -64,7 +64,7 @@ class Table(list):
             super(Table,self).__setitem__(key,value)
     
     def __delitem__(self, key):
-        if not isinstance(key, int):
+        if not (isinstance(key, int) or isinstance(key, slice)):
             try:
                 pos = self.headers.index(key)
                 del self.headers[pos]
