@@ -35,11 +35,11 @@ class Table(list):
         
     def __getitem__(self, key):
         if isinstance(key, str) or isinstance(key, unicode):
-            if key in self._headers:
+            try:
                 pos = self._headers.index(key) # get 'key' index from each data
                 return [row[pos] for row in self]
-            else:
-                raise KeyError
+            except ValueError as e:
+                raise KeyError('column does not exist')
         else:
             #could also return the row as an OrderedDict or namedtuple
             return super(Table,self).__getitem__(key)
@@ -65,14 +65,14 @@ class Table(list):
     
     def __delitem__(self, key):
         if isinstance(key, str) or isinstance(key, unicode):
-            if key in self.headers:
+            try:
                 pos = self.headers.index(key)
                 del self.headers[pos]
                 for i, row in enumerate(self):
                     del row[pos]
                     self[i] = row
-            else:
-                raise KeyError
+            except ValueError as e:
+                raise KeyError('column does not exist')
         else:
             super(Table,self).__delitem__(key)
             
