@@ -69,7 +69,7 @@ class ColTable(object):
             if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have enough columns')
             indices = range(*key.indices(len(self)))
             for key,row in zip(indices,value):
-                for col,v in zip(self.cols,row):
+                for col,v in zip(self.cols.values(),row):
                     col[key] = v
         else:
             self.cols[key] = value
