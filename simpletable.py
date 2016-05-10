@@ -55,9 +55,11 @@ class Table(list):
             super(Table,self).__setitem__(key,value)        
         elif isinstance(key, slice):
             width = self.width
+            #value = list(value) #handles case where value is an generator
             if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have enough columns')
             super(Table,self).__setitem__(key,value)
         else:
+            #value = list(value) #handles case where value is an generator
             if len(value) != len(self):
                 raise ValueError('new column %s is not the correct length for dataset' %str(key))
             if key in self._headers:
@@ -73,6 +75,7 @@ class Table(list):
                     #super(Table,self).__setitem__(i,row)
     
     def __setslice__(self,i,j,values):
+        #values = list(values) #handles case where values is an generator
         width = self.width
         if not all(len(row) == width for row in values): raise ValueError('(some of) rows update do not have enough columns')
         super(Table,self).__setslice__(i,j,values)
@@ -92,6 +95,7 @@ class Table(list):
             
     def insertcol(self,index,key,value):
         """inserted a column of data before index"""
+        #value = list(value) #handles case where value is an generator
         if len(value) != len(self):
             raise ValueError('new column %s is not the correct length for dataset' %str(key))
         self._headers.insert(index,key)
