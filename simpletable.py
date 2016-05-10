@@ -60,7 +60,7 @@ class Table(list):
         elif isinstance(key, slice):
             width = self.width
             #value = list(value) #handles case where value is an generator
-            if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have enough columns')
+            if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have correct number of columns')
             super(Table,self).__setitem__(key,value)
         else:
             #value = list(value) #handles case where value is an generator
@@ -81,7 +81,7 @@ class Table(list):
     def __setslice__(self,i,j,values):
         #values = list(values) #handles case where values is an generator
         width = self.width
-        if not all(len(row) == width for row in values): raise ValueError('(some of) rows update do not have enough columns')
+        if not all(len(row) == width for row in values): raise ValueError('(some of) rows update do not have correct number of columns')
         super(Table,self).__setslice__(i,j,values)
     
     def __delitem__(self, key):
