@@ -14,6 +14,7 @@ from collections import Sequence,Mapping,Iterable,Hashable
 # handling generators appropriately, these interfere with my checks
 # using try/except rather than if/else? Is this actually faster since we setup an iteration and then tear it down??..
 # test speed of try/except vs if/else
+# improve representation method
 
 
 class ColTable(object):
@@ -215,4 +216,23 @@ def rows2dict(headers,iterable):
     #
     result = OrderedDict((key,[row[i] for row in iterable]) for i,key in enumerate(headers))
     return result
+
+
+if __name__ == "__main__":
+    import sqlite3
+    import os
     
+    def get_country_data():
+        modulepath = os.path.dirname(__file__)
+        with sqlite3.connect(os.path.join(modulepath,'country_codes.sqlite')) as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM Countries;")
+            result = cur.fetchall()
+            cur.close()
+        return result
+
+    data = get_country_data()
+    header = ['iso2','iso3','num','name','pop']
+    
+    data2 = rows2dict(header,data)
+    tab  = ColTable(data2)
