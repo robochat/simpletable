@@ -1,173 +1,122 @@
 #!/usr/bin/env python
-"""A very simple table classes written in pure python. It allows us to
+"""A simple table classes written in pure python. It allows us to
 index the data either by row index (integer) or by column (text label).
 Data is stored by column
 
-The code is inspired by the module tablib but is vastly simplified. For
-instance tablib provides automatic validation of insertions etc during 
-normal operations and can export and import data to many formats.
+This class inherits from an OrderedDict
 """
 from ordereddict import OrderedDict
 #from collections import OrderedDict
 from collections import Sequence,Mapping,Iterable,Hashable
 #import warnings
 
-#TO DO:
-#extra methods: slicing by row, insertions, 
-#returning OrderedDicts for rows?
-#accept a sequence of column sequences?? how to do this without being too magical?
-#lose idea of columns having an order?
-#
+#TO DO
+# handling generators appropriately, these interfere with my checks
+# using try/except rather than if/else? Is this actually faster since we setup an iteration and then tear it down??..
+# test speed of try/except vs if/else
+
 
 class ColTable(object):
     """A simple table class that supports index and column indexing.
     Stores data by columns."""    
-    def __init__(self, items=[], rowitems=[], headers=[], title='', **kwargs):
-        """Expects either a dictionary of columnar data, a sequence of 
-        column orientated data or a sequence of (column-name,column-data)
-        tuples. Also accepts keyword arguements (excluding columns named
-        'items', 'rowitems', 'title' or 'headers'!). Checks that all entries
-        have the same length.
-        
-        Using the rowitems parameter, allows the class to accept row orientated
-        data such as a sequence of sequences or mappable items.        
-        
-        Input Parameters:
-            items -   iterable or mappable object. Valid input for a dict or a
-                      sequence of columnar data.
-            rowitems- iterable row orientated data. (can't use both items and rowitems)
-            headers - sequence of column names. If provided, this will determine
-                      the column ordering.
-            title -   sets a name for the dataset.
-            kwargs -  extra columns can be provided using keywords. Will be appended
-                      to dataset unless colname is in headers or items. Will overwrite
-                      entries in items
+    def __init__(self, *args, **kwargs):
+        """Takes the same input as a dict type but each value should be a
+        sequence of the same length.
         """
-        self.title = title
-        
-        if headers and len(set(headers)) != len(headers): 
-            raise ValueError("Class doesn't handle columns with duplicate names")
-        
-        if items and rowitems: 
-            raise AssertionError("only one of items and rowitems parameters should be used")
-        
-        elif rowitems: #handle sequence of rows
-            height = len(rowitems)
-            widths = (len(row) for row in rowitems)
-            width = widths.next()
-            if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns')
-            
-            if headers:
-                datadict = OrderedDict((h,None) for h in headers) #preallocate (not for speed but to get order correct)
-                tmpheaders = list(headers)
-                
-                #handle the kwargs
-                for k,v in kwargs.iteritems():
-                    if len(v) != height: raise ValueError('keyword entry (%s) does not match length of dataset' %k)
-                    datadict[k] = v
-                    del tmpheaders[tmpheaders.index(k)] #remove columns that are handled by keyword arguements
-                
-                if len(tmpheaders) != width: raise ValueError('headers length does not match length of supplied data')
-                if isinstance(rowitems[0],Iterable):
-                    for i,h in enumerate(tmpheaders):
-                        datadict[h] = [row[i] for row in rowitems]
-                elif isinstance(Mapping):
-                    for h in tmpheaders:
-                        datadict[h] = [row[h] for row in rowitems]
-                else:
-                    raise TypeError("'%s' object is not handled" %type(rowitems))
-
-            else:
-                if isinstance(rowitems[0],Iterable): 
-                    raise ValueError('headers sequence needs to be provided for this type of data')
-                elif isinstance(rowitems[0],Mapping): #could be dict but could be OrderdDict or similar
-                    if len(set(row.keys() for row in rowitems)) != width:  #all entries have the same keys?
-                        raise ValueError('not all rows have the same number of columns')
-                    tmpheaders = rowitems[0].keys()
-                    datadict = OrderedDict()
-                    for h in tmpheaders:
-                        datadict[h] = [row[h] for row in rowitems]
-                    
-                    #handle the kwargs
-                    for k,v in kwargs.iteritems():
-                        if len(v) != height: raise ValueError('keyword entry (%s) does not match length of dataset' %k)
-                        datadict[k] = v
-                else:
-                    raise TypeError("'%s' object is not handled" %type(items))
-        
-        #columnar data -  iterable of sequences plus supplied header 
-        elif (items and isinstance(items,Iterable) 
-                and all(isinstance(item,Iterable) for item in items)
-                #special exception: if the sequence entries are pairs of (Hashable,Iterable) then probably a 'serialised' dict
-                and not (len(items[0]) ==2 
-                        and isinstance(items[0][0],Hashable) 
-                        and isinstance(items[0][1],Iterable))
-               ):
-            if not headers: raise ValueError('headers sequence needs to be provided for this type of data')
-            width = len(items)
-            heights = (len(col) for col in items)
-            height = heights.next()
-            if not all(h == height for h in heights): raise ValueError('not all columns have the same number of rows')
-            
-            datadict = OrderedDict((h,None) for h in headers) #preallocate (not for speed but to get order correct)
-            tmpheaders = list(headers)
-            
-            #handle the kwargs
-            for k,v in kwargs.iteritems():
-                if len(v) != height: raise ValueError('keyword entry (%s) does not match length of dataset' %k)
-                datadict[k] = v
-                del tmpheaders[tmpheaders.index(k)] #remove columns that are handled by keyword arguements
-            
-            if len(tmpheaders) != width: raise ValueError('headers length does not match length of supplied data')
-            
-            for i,h in enumerate(tmpheaders):
-                datadict[h] = items[i]
-                
-        else: #columnar data - either via items or keywords
-            datadict = OrderedDict(items,**kwargs)            
-            # Reorder by headers sequence if provided
-            if headers:
-                if len(datadict) == 0:
-                    datadict = OrderedDict((h,[]) for h in headers)
-                elif len(headers) != len(datadict):
-                    raise ValueError('headers length does not match length of supplied data')
-                else:
-                    datadict = OrderedDict((h,datadict[h]) for h in headers)
-
-        self.cols= datadict
+        self.cols = OrderedDict(*args,**kwargs)
         self.validate()
+    
+    @property
+    def headers(self):
+        return self.cols.keys()
         
+    def __repr__(self):
+        try:
+            return '<%s table: %s>' % (self.title or 'unnamed',','.join(self.headers))
+        except AttributeError:
+            return '<table object>'
+        
+    def validate(self):
+        """checks that all columns have the same length"""
+        if len(self.cols):
+            try:
+                lengths = [len(c) for c in self.cols.values()]                
+            except TypeError as e:
+                raise TypeError('not all columns have a len()')
+            length = lengths[0]
+            if not all([l == length for l in lengths]): raise AssertionError('Columns do not all have the same length')
+        return True
+
     def __getitem__(self, key):
-        if isinstance(key, str) or isinstance(key, unicode):
-            if key in self.cols:
-                return self.cols[key]
-            else:
-                raise KeyError
+        if isinstance(key, int): 
+            return OrderedDict((name,col[key]) for name,col in self.cols.items())
+        elif isinstance(key, slice): #return another instance of class
+            return ColTable((name,col[key]) for name,col in self.cols.items())
         else:
-            #could also return the row as an OrderedDict or namedtuple
-            return tuple(col[key] for col in self.cols.values())
+            try:
+                return self.cols[key]
+            except ValueError:
+                raise KeyError('column does not exist')            
     
     def __setitem__(self, key, value):
-        if isinstance(key, str) or isinstance(key, unicode):
+        if isinstance(key, int):
+            try:
+                for name,col in self.cols.items():
+                    col[key] = value[name]
+            except ValueError as e:
+                raise ValueError('row update does not include all columns')
+            except TypeError as e: #not a mappable so try sequence-type code.
+                #value = list(value) #handles case where value is an generator
+                if len(value) != len(self.cols): raise ValueError('row update does not have enough columns')
+                for col,v in zip(self.cols.values(),value):
+                    col[key] = v  
+        elif isinstance(key, slice): #value might be an iterable in this case
+            #value = list(value) #handles case where value is an generator
+            try:
+                for (name,col) in self.cols.items():
+                    col[key] = (row[name] for row in value)               
+            except ValueError as e:
+                raise ValueError('rows update does not include all columns in all rows')
+            except TypeError as e:
+                width = len(self.cols)
+                if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have enough columns')
+                for i,(name,col) for self.cols.items():
+                    col[key] = (row[i] for row in value)
+        else:
             self.cols[key] = value
             self.validate()
-        else:
-            if len(value) != len(self.cols): raise ValueError('row update does not have enough columns')
-            for col,v in zip(self.cols,value):
-                col[key] = v
-            #handle assignment of a mappable object?
     
     def __delitem__(self, key):
-        if isinstance(key, str) or isinstance(key, unicode):
-            if key in self.cols:
+        if not (isinstance(key, int) or isinstance(key, slice)):
+            try:
                 del self.cols[key]
-            else:
-                raise KeyError
+            except ValueError:
+                raise KeyError('column does not exist')
         else:
             for h,col in self.cols.iteritems():
                 del col[key]
                 self.cols[h] = col
-                
+    
+    def __iter__(self):
+        """iterate over the rows rather than the columns (can always access the cols
+        attribute directly)."""
+            #return (dict((name,col[i]) for name,col in self.cols.items())  for i in range(len(self))
+            #return (tuple(col[i] for col in self.cols.values())  for i in range(len(self))
+            #namedtuple? 
+            #return (list(col[i] for col in self.cols.values())  for i in range(len(self))
+            return (OrderedDict((name,col[i]) for name,col in self.cols.items())  for i in range(len(self))
+        
+    def __len__(self):
+        """number of rows in the dataset"""
+        return len(self.cols.values()[0]) #assuming that collection is self-consistant
+        
+    def select(self,headers):
+        """retrieve only selected columns from the dataset. Data is returned as another
+        ColTable class.
+        
+        headers - iterable of columns to return, requested ordering is preserved"""
+        return ColTable((key,self.col[key]) for key in headers)        
+        
     def insertcol(self,index,key,value):
         """inserted a column of data before index"""
         #need to create a new OrderedDict
@@ -179,50 +128,56 @@ class ColTable(object):
     
     def insert(self, index, row):
         """insert row before index"""
-        if len(row) != len(self.cols): raise ValueError('row insert does not have enough columns')
-        for (key,col),v in zip(self.cols.iteritems(),row):
-            #Add code here to handle row types other than list
-            col.insert(index,v)
-            #self.cols[key] = col
+        try:
+            for key,col in self.cols.iteritems():
+                #Add code here to handle row types other than list
+                col.insert(index,row[key])
+                #self.cols[key] = col 
+        except ValueError as e:
+            raise ValueError('row update does not include all columns')
+        except TypeError as e: #not a mappable so try sequence-type code.
+            #row = list(row) #handles case where value is an generator
+            if len(row) != len(self.cols): raise ValueError('appended row does not have enough columns')
+            for (key,col),v in zip(self.cols.iteritems(),row):
+                #Add code here to handle row types other than list
+                col.insert(index,v)
+                #self.cols[key] = col
             
     def append(self, row):
         """append a row to the table"""
-        if len(row) != len(self.cols): raise ValueError('row update does not have enough columns')
-        for (key,col),v in zip(self.cols.iteritems(),row):
-            #Add code here to handle row types other than list
-            col.append(v)
-            #self.cols[key] = col
-    
+        try:
+            for key,col in self.cols.iteritems():
+                #Add code here to handle row types other than list
+                col.append(row[key])
+                #self.cols[key] = col 
+        except ValueError as e:
+            raise ValueError('row update does not include all columns')
+        except TypeError as e: #not a mappable so try sequence-type code.
+            #row = list(row) #handles case where value is an generator
+            if len(row) != len(self.cols): raise ValueError('appended row does not have enough columns')
+            for (key,col),v in zip(self.cols.iteritems(),row):
+                #Add code here to handle row types other than list
+                col.append(v)
+                #self.cols[key] = col
+
+"""    
     def extend(self, iterable):
-        """extend table by appending rows from the iterable"""
-        widths = (len(row) for row in iterable)
+        ""extend table by appending rows from the iterable""
+        widths = (len(row) for row in iterable) #using up iterable!!!
         width = widths.next()
         if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns') 
         if width != len(self.cols): raise ValueError('row insert does not have enough columns')
-        for i,(key,col) in enumerate(self.cols.iteritems()):
-            #Add code here to handle row types other than list
-            col.extend(index,[row[i] for row in iterable])
-            #self.cols[key] = col
-
-    def __repr__(self):
-        try:
-            return '<%s table: %s>' % (self.title or 'unnamed',','.join(self.headers))
-        except AttributeError:
-            return '<table object>'
-            
-    @property
-    def headers(self):
-        return self.cols.keys()
-        
-    def validate(self):
-        """checks that all columns have the same length"""
-        if len(self.cols):
-            lengths = [len(c) for c in self.cols.values()]
-            length = lengths[0]
-            if not all([l == length for l in lengths]): raise AssertionError('Columns do not all have the same length')
-        return True
-
-
+        if isinstance(iterable,Mappable):
+            for key,col in self.cols.iteritems():
+                #Add code here to handle row types other than list
+                col.extend(row[key] for row in iterable)
+                #self.cols[key] = col            
+        else:            
+            for i,(key,col) in enumerate(self.cols.iteritems()):
+                #Add code here to handle row types other than list
+                col.extend([row[i] for row in iterable])
+                #self.cols[key] = col
+"""
 
 
 def rows2cols(iterable):
@@ -237,16 +192,16 @@ def rows2cols(iterable):
     return result
 
 def cols2dict(headers,iterable):
-    """creates a dictionary from sequences of keys and values
+    """creates an ordered dictionary from sequences of keys and values
     
     headers - a sequence of hashable items
     iterable - a sequence of items (checked to be the same length as headers)
     """
     if len(headers) != len(iterable): raise ValueError('headers amd iterable sequences are not of equal length')
-    return dict(zip(headers,iterable))
+    return OrderedDict(zip(headers,iterable))
 
 def rows2dict(headers,iterable):
-    """creates a dictionary from sequences of column names and rows of data
+    """creates an ordered dictionary from sequences of column names and rows of data
     
     headers - a sequence of hashable items
     iterable - a sequence of rows (checked to be all of the same length)
@@ -257,6 +212,6 @@ def rows2dict(headers,iterable):
     if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns')
     if len(headers) != width: raise ValueError('headers amd dataset are not the same width')
     #
-    result = dict((key,[row[i] for row in iterable]) for i,key in enumerate(headers))
+    result = OrderedDict((key,[row[i] for row in iterable]) for i,key in enumerate(headers))
     return result
     
