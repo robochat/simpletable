@@ -12,8 +12,6 @@ from collections import Sequence,Mapping,Iterable,Hashable
 
 #TO DO
 # handling generators appropriately, these interfere with my checks
-# using try/except rather than if/else? Is this actually faster since we setup an iteration and then tear it down??..
-# test speed of try/except vs if/else
 # improve representation method
 
 
@@ -62,24 +60,20 @@ class ColTable(object):
     
     def __setitem__(self, key, value):
         if isinstance(key, int):
-            try:
+            if isinstance(value,Mapping):
                 for name,col in self.cols.items():
                     col[key] = value[name]
-            except ValueError as e:
-                raise ValueError('row update does not include all columns')
-            except TypeError as e: #not a mappable so try sequence-type code.
+            else: #not a mappable so try sequence-type code.
                 #value = list(value) #handles case where value is an generator
                 if len(value) != len(self.cols): raise ValueError('row update does not have enough columns')
                 for col,v in zip(self.cols.values(),value):
                     col[key] = v  
         elif isinstance(key, slice): #value might be an iterable in this case
             #value = list(value) #handles case where value is an generator
-            try:
+            if isinstance(value[0],Mapping):
                 for (name,col) in self.cols.items():
                     col[key] = (row[name] for row in value)               
-            except ValueError as e:
-                raise ValueError('rows update does not include all columns in all rows')
-            except TypeError as e:
+            else: #not a mappable so try sequence-type code.
                 width = len(self.cols)
                 if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have correct number of columns')
                 for i,(name,col) in enumerate(self.cols.items()):
@@ -130,14 +124,12 @@ class ColTable(object):
     
     def insert(self, index, row):
         """insert row before index"""
-        try:
+        if isinstance(row,Mapping):
             for key,col in self.cols.iteritems():
                 #Add code here to handle row types other than list
                 col.insert(index,row[key])
                 #self.cols[key] = col 
-        except ValueError as e:
-            raise ValueError('row update does not include all columns')
-        except TypeError as e: #not a mappable so try sequence-type code.
+        else: #not a mappable so try sequence-type code.
             #row = list(row) #handles case where value is an generator
             if len(row) != len(self.cols): raise ValueError('appended row does not have correct number of columns')
             for (key,col),v in zip(self.cols.iteritems(),row):
@@ -147,14 +139,12 @@ class ColTable(object):
             
     def append(self, row):
         """append a row to the table"""
-        try:
+        if isinstance(row,Mapping):
             for key,col in self.cols.iteritems():
                 #Add code here to handle row types other than list
                 col.append(row[key])
                 #self.cols[key] = col 
-        except ValueError as e:
-            raise ValueError('row update does not include all columns')
-        except TypeError as e: #not a mappable so try sequence-type code.
+        else: #not a mappable so try sequence-type code.
             #row = list(row) #handles case where value is an generator
             if len(row) != len(self.cols): raise ValueError('appended row does not have correct number of columns')
             for (key,col),v in zip(self.cols.iteritems(),row):
