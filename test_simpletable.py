@@ -100,17 +100,39 @@ class TestTable(unittest.TestCase):
         pass
     
     def test_appendrowitem(self):
-        pass
-        #list,tuple,numpy - no type checking, only length
+        tab = simpletable.Table(data,headers=header,title='countrycodes') #fresh table
+        width = tab.width
+        length = len(tab)       
+        entry = [2]*width #no type checking, only length
+        for e in entry,tuple(entry): #numpy?
+            tab.append(e)
+            length += 1
+            self.assertEqual(len(tab),length)
+            self.assertEqual(tab.width,width)
         #generator fail check
+        self.assertRaises(TypeError,tab.append,(i for i in entry))
 
     def test_appendcolitem(self):
-        pass
-        #list,tuple,numpy - no type checking, only length
+        #create an instance with mutable rows (lists not tuples)
+        tab = simpletable.Table((list(row) for row in data),headers=self.tab.headers)
+        width = tab.width
+        length = len(tab)
+        entry = [2]*length #no type checking, only length
+        for i,e in enumerate((entry,tuple(entry))): #numpy?
+            colname = 'OhYeah' + str(i)
+            tab[colname] = e
+            self.assertEqual(len(tab),length)
+            width += 1
+            self.assertEqual(tab.width,width)
+            self.assertIn(colname,tab.headers)
         #generator fail check
+        self.assertRaises(TypeError,tab.__setitem__,'test',(i for i in entry))
 
     def test_insertcolitem(self):
-        pass
+        #create an instance with mutable rows (lists not tuples)
+        tab = simpletable.Table((list(row) for row in data),headers=self.tab.headers)
+        width = tab.width
+        length = len(tab)
         #list,tuple,numpy - no type checking, only length
         #generator fail check
     
@@ -124,7 +146,7 @@ class TestTable(unittest.TestCase):
 
     def test_delcolitem(self):
         #create an instance with mutable rows (lists not tuples)
-        tab = simpletable.Table((list(row) for row in self.tab),headers=self.tab.headers)
+        tab = simpletable.Table((list(row) for row in data),headers=self.tab.headers)
         width = tab.width
         length = len(tab)
         col = tab.headers[0]
