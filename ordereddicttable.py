@@ -11,10 +11,9 @@ from collections import Sequence,Mapping,Iterable,Hashable
 #import warnings
 
 #TO DO
-# class should be able to handle mappable objects (dict-types) for set, append, insert, extend
-# handle seting values by slice properly
-# iter by row
-# 
+# handling generators appropriately, these interfere with my checks
+# using try/except rather than if/else?
+
 
 class ColTable(object):
     """A simple table class that supports index and column indexing.
@@ -60,17 +59,28 @@ class ColTable(object):
     
     def __setitem__(self, key, value):
         if isinstance(key, int):
-            if len(value) != len(self.cols): raise ValueError('row update does not have enough columns')
-            for col,v in zip(self.cols,value):
-                col[key] = v
-            #handle assignment of a mappable object?        
-        elif isinstance(key, slice):
-            width = len(self.cols)
-            if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have enough columns')
-            indices = range(*key.indices(len(self)))
-            for key,row in zip(indices,value):
-                for col,v in zip(self.cols.values(),row):
-                    col[key] = v
+            try:
+                for name,col in self.cols.items():
+                    col[key] = value[name]
+            except ValueError as e:
+                raise ValueError('row update does not include all columns')
+            except TypeError as e: #not a mappable so try sequence-type code.
+                #value = list(value) #handles case where value is an generator
+                if len(value) != len(self.cols): raise ValueError('row update does not have enough columns')
+                for col,v in zip(self.cols.values(),value):
+                    col[key] = v  
+        elif isinstance(key, slice): #value might be an iterable in this case
+            #value = list(value) #handles case where value is an generator
+            try:
+                for (name,col) in self.cols.items():
+                    col[key] = (row[name] for row in value)               
+            except ValueError as e:
+                raise ValueError('rows update does not include all columns in all rows')
+            except TypeError as e:
+                width = len(self.cols)
+                if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have enough columns')
+                for i,(name,col) for self.cols.items():
+                    col[key] = (row[i] for row in value)
         else:
             self.cols[key] = value
             self.validate()
