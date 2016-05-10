@@ -79,8 +79,8 @@ class ColTable(object):
                 raise ValueError('rows update does not include all columns in all rows')
             except TypeError as e:
                 width = len(self.cols)
-                if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have enough columns')
-                for i,(name,col) for self.cols.items():
+                if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have correct number of columns')
+                for i,(name,col) in enumerate(self.cols.items()):
                     col[key] = (row[i] for row in value)
         else:
             self.cols[key] = value
@@ -137,7 +137,7 @@ class ColTable(object):
             raise ValueError('row update does not include all columns')
         except TypeError as e: #not a mappable so try sequence-type code.
             #row = list(row) #handles case where value is an generator
-            if len(row) != len(self.cols): raise ValueError('appended row does not have enough columns')
+            if len(row) != len(self.cols): raise ValueError('appended row does not have correct number of columns')
             for (key,col),v in zip(self.cols.iteritems(),row):
                 #Add code here to handle row types other than list
                 col.insert(index,v)
@@ -154,7 +154,7 @@ class ColTable(object):
             raise ValueError('row update does not include all columns')
         except TypeError as e: #not a mappable so try sequence-type code.
             #row = list(row) #handles case where value is an generator
-            if len(row) != len(self.cols): raise ValueError('appended row does not have enough columns')
+            if len(row) != len(self.cols): raise ValueError('appended row does not have correct number of columns')
             for (key,col),v in zip(self.cols.iteritems(),row):
                 #Add code here to handle row types other than list
                 col.append(v)
