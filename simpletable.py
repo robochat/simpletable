@@ -118,6 +118,7 @@ class Table(list):
         
     @headers.setter
     def headers(self,newheaders):
+        newheaders = list(newheaders) #cast to list
         width = self.width
         if width and len(newheaders) != width: raise ValueError('new header is not the correct length for dataset')
         self._headers = newheaders
