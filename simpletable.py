@@ -7,6 +7,10 @@ instance tablib provides automatic validation of insertions etc during
 normal operations and can export and import data to many formats.
 """
 
+# TO DO
+# __setitem__, __setslice__ and insertcol won't work with generators
+# too many if/else not enough try: except:
+
 class Table(list):
     """A very simple table class that supports index and column indexing.
     
@@ -23,7 +27,7 @@ class Table(list):
         """Takes an iterable. Can also use the keyword argument 'headers' to 
         set the column headers.      
         """        
-        list.__init__(self, *args)
+        super(Table,self).__init__(*args)
         self.title = kwargs.pop('title',None)
         self._headers = list(kwargs.pop('headers',[]))
         
@@ -140,3 +144,22 @@ class Table(list):
         for i,r in enumerate(self): 
             if len(r) != width: raise AssertionError('row %d length differs from previous rows' %i)
         return True
+
+
+if __name__ == "__main__":
+    import sqlite3
+    import os
+    
+    def get_country_data():
+        modulepath = os.path.dirname(__file__)
+        with sqlite3.connect(os.path.join(modulepath,'country_codes.sqlite')) as conn:
+            cur = conn.cursor()
+            cur.execute("SELECT * FROM Countries;")
+            result = cur.fetchall()
+            cur.close()
+        return result
+
+    data = get_country_data()
+    header = ['iso2','iso3','num','name','pop']
+    
+    tab  = Table(data,headers=header,title='countrycodes')
