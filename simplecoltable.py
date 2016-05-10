@@ -23,6 +23,7 @@ class ColTable(object):
         """Takes the same input as a dict type but each value should be a
         sequence of the same length.
         """
+        self.title = 'unamed'
         self.cols = OrderedDict(*args,**kwargs)
         self.validate()
     
@@ -100,11 +101,11 @@ class ColTable(object):
     def __iter__(self):
         """iterate over the rows rather than the columns (can always access the cols
         attribute directly)."""
-            #return (dict((name,col[i]) for name,col in self.cols.items())  for i in range(len(self))
-            #return (tuple(col[i] for col in self.cols.values())  for i in range(len(self))
-            #namedtuple? 
-            #return (list(col[i] for col in self.cols.values())  for i in range(len(self))
-            return (OrderedDict((name,col[i]) for name,col in self.cols.items())  for i in range(len(self))
+        #return (dict((name,col[i]) for name,col in self.cols.items())  for i in range(len(self)))
+        #return (tuple(col[i] for col in self.cols.values())  for i in range(len(self)))
+        #namedtuple? 
+        #return (list(col[i] for col in self.cols.values())  for i in range(len(self)))
+        return (OrderedDict((name,col[i]) for name,col in self.cols.items())  for i in range(len(self)))
         
     def __len__(self):
         """number of rows in the dataset"""
