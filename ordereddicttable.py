@@ -12,7 +12,8 @@ from collections import Sequence,Mapping,Iterable,Hashable
 
 #TO DO
 # handling generators appropriately, these interfere with my checks
-# using try/except rather than if/else?
+# using try/except rather than if/else? Is this actually faster since we setup an iteration and then tear it down??..
+# test speed of try/except vs if/else
 
 
 class ColTable(object):
@@ -158,9 +159,10 @@ class ColTable(object):
                 #Add code here to handle row types other than list
                 col.append(v)
                 #self.cols[key] = col
-    
-    ??def extend(self, iterable):
-        """extend table by appending rows from the iterable"""
+
+"""    
+    def extend(self, iterable):
+        ""extend table by appending rows from the iterable""
         widths = (len(row) for row in iterable) #using up iterable!!!
         width = widths.next()
         if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns') 
@@ -175,7 +177,7 @@ class ColTable(object):
                 #Add code here to handle row types other than list
                 col.extend([row[i] for row in iterable])
                 #self.cols[key] = col
-
+"""
 
 
 def rows2cols(iterable):
