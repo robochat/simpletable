@@ -127,13 +127,16 @@ class ColTable(object):
     
     def insert(self, index, row):
         """insert row before index"""
-        if len(row) != len(self.cols): raise ValueError('row insert does not have enough columns')
-        if isinstance(row,Mappable):
+        try:
             for key,col in self.cols.iteritems():
                 #Add code here to handle row types other than list
                 col.insert(index,row[key])
-                #self.cols[key] = col            
-        else:
+                #self.cols[key] = col 
+        except ValueError as e:
+            raise ValueError('row update does not include all columns')
+        except TypeError as e: #not a mappable so try sequence-type code.
+            #row = list(row) #handles case where value is an generator
+            if len(row) != len(self.cols): raise ValueError('appended row does not have enough columns')
             for (key,col),v in zip(self.cols.iteritems(),row):
                 #Add code here to handle row types other than list
                 col.insert(index,v)
@@ -141,13 +144,16 @@ class ColTable(object):
             
     def append(self, row):
         """append a row to the table"""
-        if len(row) != len(self.cols): raise ValueError('appended row does not have enough columns')
-        if isinstance(row,Mappable):
+        try:
             for key,col in self.cols.iteritems():
                 #Add code here to handle row types other than list
                 col.append(row[key])
-                #self.cols[key] = col            
-        else:
+                #self.cols[key] = col 
+        except ValueError as e:
+            raise ValueError('row update does not include all columns')
+        except TypeError as e: #not a mappable so try sequence-type code.
+            #row = list(row) #handles case where value is an generator
+            if len(row) != len(self.cols): raise ValueError('appended row does not have enough columns')
             for (key,col),v in zip(self.cols.iteritems(),row):
                 #Add code here to handle row types other than list
                 col.append(v)
