@@ -34,18 +34,30 @@ class Table(list):
         self.validate()
         
     def __getitem__(self, key):
-        if not (isinstance(key, int) or isinstance(key, slice)):
+        if isinstance(key, int):
+            #could also return the row as an OrderedDict or namedtuple?
+            return super(Table,self).__getitem__(key)
+        elif isinstance(key, slice): #return a new table instance
+            return Table(super(Table,self).__getitem__(key),headers=self.headers,title=self.title)
+        else:
             try:
                 pos = self._headers.index(key) # get 'key' index from each data
                 return [row[pos] for row in self]
             except ValueError as e:
                 raise KeyError('column does not exist')
-        else:
-            #could also return the row as an OrderedDict or namedtuple?
-            return super(Table,self).__getitem__(key)
     
+    def __getslice__(self,i,j):
+        return Table(super(Table,self).__getslice__(i,j),headers=self.headers,title=self.title)
+        
     def __setitem__(self, key, value):
-        if not (isinstance(key, int) or isinstance(key, slice)):
+        if isinstance(key, int): 
+            if len(value) != self.width: raise ValueError('new row is not the correct width for the dataset')
+            super(Table,self).__setitem__(key,value)        
+        elif isinstance(key, slice):
+            width = self.width
+            if not all(len(row) == width for row in value): raise ValueError('(some of) rows update do not have enough columns')
+            super(Table,self).__setitem__(key,value)
+        else:
             if len(value) != len(self):
                 raise ValueError('new column %s is not the correct length for dataset' %str(key))
             if key in self._headers:
@@ -59,9 +71,11 @@ class Table(list):
                     row += [val]
                     #row.append(val)
                     #super(Table,self).__setitem__(i,row)
-        else:
-            if len(value) != self.width: raise ValueError('new row is not the correct width for the dataset')
-            super(Table,self).__setitem__(key,value)
+    
+    def __setslice__(self,i,j,values):
+        width = self.width
+        if not all(len(row) == width for row in values): raise ValueError('(some of) rows update do not have enough columns')
+        super(Table,self).__setslice__(i,j,values)
     
     def __delitem__(self, key):
         if not (isinstance(key, int) or isinstance(key, slice)):
