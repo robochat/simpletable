@@ -123,6 +123,17 @@ class ColTable(object):
         """number of rows in the dataset"""
         return len(self.cols.values()[0]) #assuming that collection is self-consistant
         
+    def __eq__(self,other):
+        if (type(other) == type(self)
+          and self.title== other.title 
+          and self.cols == other.cols):
+            return True
+        else:
+            return False
+        
+    def __ne__(self,other):
+        return not self.__eq__(other)
+    
     def select(self,headers):
         """retrieve only selected columns from the dataset. Data is returned as another
         ColTable class.
