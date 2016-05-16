@@ -5,9 +5,10 @@ Data is stored by column
 
 This class inherits from an OrderedDict
 """
-from ordereddict import OrderedDict
-#from collections import OrderedDict
-from collections import Sequence,Mapping,Iterable,Hashable
+#from ordereddict import OrderedDict
+from collections import OrderedDict
+from collections import Mapping #Hashable, Sequence, Iterable
+import copy
 #import warnings
 
 #TO DO
