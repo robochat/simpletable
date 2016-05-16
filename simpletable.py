@@ -138,6 +138,12 @@ class Table(list):
         if width and len(obj) != width: raise ValueError('new row is not the correct length for dataset: %r' %(obj,))
         super(Table,self).append(obj)
         
+    def insert(self,index,obj):
+        """L.append(object) -- append row to end"""
+        width = self.width
+        if width and len(obj) != width: raise ValueError('new row is not the correct length for dataset: %r' %(obj,))
+        super(Table,self).insert(index,obj)
+    
     def validate(self):
         """checks that all rows have the same length"""
         width = self.width
