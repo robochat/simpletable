@@ -168,6 +168,11 @@ class ColTable(object):
                 #Add code here to handle row types other than list
                 col.append(v)
                 #self.cols[key] = col
+                
+    def pop(self,index=-1):
+        """remove and return row at index (default last).
+        Raises IndexError if table is empty or index is out of range."""
+        return OrderedDict((name,col.pop(index)) for name,col in self.cols.items())
 
 """    
     def extend(self, iterable):
