@@ -13,7 +13,9 @@ import copy
 
 #TO DO
 # handling generators appropriately, these interfere with my checks
-# improve representation method
+# improve representation and __str__ methods
+# equality operator
+# ColTable construction currently requires 2xmemory of data and finishes with a shallow copy of the data
 
 
 class ColTable(object):
