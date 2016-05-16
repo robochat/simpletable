@@ -133,7 +133,7 @@ class ColTable(object):
         headers = self.headers
         headers.insert(index, key)
         self[key] = value # append new column onto end
-        newdict = OrderedDict((h,datadict[h]) for h in headers)
+        newdict = OrderedDict((h,self[h]) for h in headers)
         self.cols = newdict #replace current cols OrderedDict with new one.
     
     def insert(self, index, row):
