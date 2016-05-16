@@ -30,6 +30,19 @@ class ColTable(object):
     def headers(self):
         return self.cols.keys()
         
+    @headers.setter
+    def headers(self,newheaders):
+        width = len(self.cols)
+        if not width:
+            self.cols = OrderedDict((k,[]) for k in newheaders)
+        elif len(newheaders) != width: raise ValueError('new header is not the correct length for dataset')
+        else:
+            self.cols = OrderedDict((k,v) for k,v in zip(newheaders,self.cols.values()))
+    
+    @property
+    def width(self):
+        return len(self.cols)
+    
     def __repr__(self):
         return 'ColTable(%r)' %(self.cols)
         
