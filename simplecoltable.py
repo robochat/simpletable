@@ -92,8 +92,9 @@ class ColTable(object):
                 for i,(name,col) in enumerate(self.cols.items()):
                     col[key] = (row[i] for row in value)
         else:
+            if len(value) != len(self): raise ValueError('column update does not have enough columns')
             self.cols[key] = value
-            self.validate()
+            #self.validate()
     
     def __delitem__(self, key):
         if not (isinstance(key, int) or isinstance(key, slice)):
