@@ -140,7 +140,21 @@ class TestTable(unittest.TestCase):
             self.assertTrue(tab.validate())           
         
     def test_setbyslice(self):
-        pass
+        #test __setslice__
+        ##test for success
+        
+        ##test for failure
+        
+        #test __setitem__ with slice object
+        ##test for success
+        
+        ##test for failure
+        
+        #test __setitem__ with slice object and stride
+        ##test for success
+        
+        ##test for failure
+        
     
     def test_appendrowitem(self):
         tab = simpletable.Table(data,headers=header,title='countrycodes') #fresh table

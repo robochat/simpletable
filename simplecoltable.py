@@ -31,10 +31,10 @@ class ColTable(object):
         return self.cols.keys()
         
     def __repr__(self):
-        try:
-            return '<%s table: %s>' % (self.title or 'unnamed',','.join(self.headers))
-        except AttributeError:
-            return '<table object>'
+        return 'ColTable(%r)' %(self.cols)
+        
+    #def __str__(self):
+    #   pass
         
     def validate(self):
         """checks that all columns have the same length"""
