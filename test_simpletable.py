@@ -91,10 +91,53 @@ class TestTable(unittest.TestCase):
         self.assertTrue(all(len(row) == width for row in tmp2))
         
     def test_setrowitem(self):
-        pass
+        tab = simpletable.Table(data,headers=header,title='countrycodes') #fresh table
+        width = tab.width
+        length = len(tab)      
+        headers = list(tab.headers)
+        #good insertions
+        entry = [2]*width #no type checking, only width
+        for e in entry,tuple(entry): #numpy array?
+            idx = 10
+            tab[idx] = e
+            self.assertEqual(len(tab),length)
+            self.assertEqual(tab.width,width)
+            self.assertEqual(tab.headers,headers)
+            self.assertTrue(tab.validate())
+        #bad insertions
+        entry = [2]*(width + 11)
+        for e in entry,tuple(entry): #numpy array?
+            idx = 10
+            self.assertRaises(ValueError,tab.__setitem__,idx,e)
+            self.assertEqual(len(tab),length)
+            self.assertEqual(tab.width,width)
+            self.assertEqual(tab.headers,headers)
+            self.assertTrue(tab.validate())  
 
     def test_setcolitem(self):
-        pass
+        #create an instance with mutable rows (lists not tuples)
+        tab = simpletable.Table((list(row) for row in data),headers=self.tab.headers)
+        width = tab.width
+        length = len(tab)
+        headers = list(tab.headers)
+        #good insertions
+        entry = [2]*length #no type checking, only length
+        for e in entry,tuple(entry): #numpy array?
+            idx = 'iso3'
+            tab[idx] = e
+            self.assertEqual(len(tab),length)
+            self.assertEqual(tab.width,width)
+            self.assertEqual(tab.headers,headers)
+            self.assertTrue(tab.validate())
+        #bad insertions
+        entry = [2]*(length-1)
+        for e in entry,tuple(entry): #numpy array?
+            idx = 'iso3'
+            self.assertRaises(ValueError,tab.__setitem__,idx,e)
+            self.assertEqual(len(tab),length)
+            self.assertEqual(tab.width,width)
+            self.assertEqual(tab.headers,headers)
+            self.assertTrue(tab.validate())           
         
     def test_setbyslice(self):
         pass
@@ -104,13 +147,37 @@ class TestTable(unittest.TestCase):
         width = tab.width
         length = len(tab)       
         entry = [2]*width #no type checking, only length
-        for e in entry,tuple(entry): #numpy?
+        for e in entry,tuple(entry): #numpy array?
             tab.append(e)
             length += 1
             self.assertEqual(len(tab),length)
             self.assertEqual(tab.width,width)
         #generator fail check
         self.assertRaises(TypeError,tab.append,(i for i in entry))
+        #bad insertion tests
+        entry2 = [2]*(width-1) #no type checking, only length
+        for e in entry2,tuple(entry2): #numpy array?
+            self.assertRaises(ValueError,tab.append,e)
+            self.assertTrue(tab.validate())
+
+    def test_insertrowitem(self):
+        tab = simpletable.Table(data,headers=header,title='countrycodes') #fresh table
+        width = tab.width
+        length = len(tab)       
+        entry = [2]*width #no type checking, only length
+        for e in entry,tuple(entry): #numpy array?
+            idx = 1
+            tab.insert(idx,e)
+            length += 1
+            self.assertEqual(len(tab),length)
+            self.assertEqual(tab.width,width)
+        #generator fail check
+        self.assertRaises(TypeError,tab.append,(i for i in entry))
+        #bad insertion tests
+        entry2 = [2]*(width-1) #no type checking, only length
+        for e in entry2,tuple(entry2): #numpy array?
+            self.assertRaises(ValueError,tab.insert,idx,e)
+            self.assertTrue(tab.validate())
 
     def test_appendcolitem(self):
         #create an instance with mutable rows (lists not tuples)
@@ -118,7 +185,7 @@ class TestTable(unittest.TestCase):
         width = tab.width
         length = len(tab)
         entry = [2]*length #no type checking, only length
-        for i,e in enumerate((entry,tuple(entry))): #numpy?
+        for i,e in enumerate((entry,tuple(entry))): #numpy array?
             colname = 'OhYeah' + str(i)
             tab[colname] = e
             self.assertEqual(len(tab),length)
@@ -127,14 +194,42 @@ class TestTable(unittest.TestCase):
             self.assertIn(colname,tab.headers)
         #generator fail check
         self.assertRaises(TypeError,tab.__setitem__,'test',(i for i in entry))
+        #bad insertion tests
+        entry2 = [2]*(length+1) #no type checking, only length
+        for i,e in enumerate((entry2,tuple(entry2))): #numpy array?
+            colname = 'OhYeah' + str(i)
+            def test(): tab[colname] = e
+            self.assertRaises(ValueError,test)
+            self.assertTrue(tab.validate())
 
     def test_insertcolitem(self):
         #create an instance with mutable rows (lists not tuples)
         tab = simpletable.Table((list(row) for row in data),headers=self.tab.headers)
         width = tab.width
         length = len(tab)
-        #list,tuple,numpy - no type checking, only length
+        headers = list(tab.headers)
+        entry = [2]*length #no type checking, only length
+        for i,e in enumerate((entry,tuple(entry))): #numpy array?
+            idx = 1
+            colname = 'OhYeah' + str(i)
+            tab.insertcol(idx,colname,e)
+            self.assertEqual(len(tab),length)
+            width += 1
+            headers.insert(idx,colname)
+            self.assertEqual(tab.width,width)
+            self.assertIn(colname,tab.headers)
+            self.assertEqual(tab.headers,headers)
         #generator fail check
+        idx = 1
+        self.assertRaises(TypeError,tab.insertcol,idx,'test',(i for i in entry))
+        #bad insertion tests
+        entry2 = [2]*(length+1) #no type checking, only length
+        for i,e in enumerate((entry2,tuple(entry2))): #numpy array?
+            idx = 1
+            colname = 'OhYeah' + str(i)
+            def test(): tab[colname] = e
+            self.assertRaises(ValueError,tab.insertcol,idx,colname,e)
+            self.assertTrue(tab.validate())
     
     def test_delrowitem(self):
         tab = self.tab
@@ -156,7 +251,16 @@ class TestTable(unittest.TestCase):
         self.assertNotIn(col,tab.headers)
     
     def test_validate(self):
-        pass
+        #create a disposable instance
+        tab = simpletable.Table((list(row) for row in data),headers=self.tab.headers)
+        #test header violation
+        tab._headers.append('test')
+        self.assertRaises(AssertionError,tab.validate)
+        tab._headers.pop(-1)
+        self.assertTrue(self.tab.validate())
+        #test row violation
+        tab[-2].pop() #shorten 2nd row from end - mutating a retrieved row evades checks
+        self.assertRaises(AssertionError,tab.validate)
         
     def test_headers(self):
         h = list(header) #copy
