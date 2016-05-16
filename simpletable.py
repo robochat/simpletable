@@ -11,20 +11,32 @@ normal operations and can export and import data to many formats.
 # __setitem__, __setslice__ and insertcol won't work with generators
 
 class Table(list):
-    """A very simple table class that supports index and column indexing.
+    """A simple table class that supports index and column indexing.
     
-    Column names should be strings (or unicode). The class also doesn't 
-    cope well with duplicate column names, so best to avoid that.
+    Column names should be strings, unicode or anything hashable that isn't
+    an integer. Integer indexing is used to access the rows. The class also
+    doesn't cope well with duplicate column names, so best to avoid that.
+    
+    The class inherits from the list class and so will often operate like
+    a list class except that all entries will be checked to have the same
+    length. It is possible to mutate a row entry to corrupt the data structure;
+    the method validate() checks that the rows and the header all have the
+    same lengths.
         
-    The class doesn't change the type of the row entries given to it. 
-    Hence if immutable row entries are inserted then it won't be possible
-    to append or change entries by column indexing later.
+    Warning: The Table class doesn't coerce the type of the row entries given 
+    to it to lists. Hence if immutable row entries are inserted then it won't
+    be possible to append or change entries by column indexing later. Neither
+    will the method insertcol() or column deletion work. This is done to make
+    the class more flexible for users. Row entries just need to have a length
+    and be indexable by integer in order for the class to mostly work.
     
-    The list method extend() is not currently validated.
+    Note: The list method extend() is not currently validated.
     """
     def __init__(self, *args, **kwargs):
-        """Takes an iterable. Can also use the keyword argument 'headers' to 
-        set the column headers.      
+        """Takes an iterable. 
+        headers - iterable of column labels
+        title - optional label for datastructure (mostly unused).
+        set the column headers and the keyword   
         """        
         super(Table,self).__init__(*args)
         self.title = kwargs.pop('title',None)
@@ -33,7 +45,6 @@ class Table(list):
         if len(set(self._headers)) != len(self._headers): 
             raise ValueError("Class doesn't handle columns with duplicate names")
         
-        if kwargs: raise TypeError('got an unexpected keyword argument %s',kwargs.pop())
         self.validate()
         
     def __getitem__(self, key):

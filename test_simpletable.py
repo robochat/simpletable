@@ -154,7 +154,7 @@ class TestTable(unittest.TestCase):
         ##test for success
         
         ##test for failure
-        
+        pass
     
     def test_appendrowitem(self):
         tab = simpletable.Table(data,headers=header,title='countrycodes') #fresh table

@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 """A simple table classes written in pure python. It allows us to
-index the data either by row index (integer) or by column (text label).
-Data is stored by column
-
-This class inherits from an OrderedDict
+index the data either by row index (integer) or by column (text label or
+anything hashable that isn't an integer).
 """
 #from ordereddict import OrderedDict
 from collections import OrderedDict
@@ -13,14 +11,28 @@ import copy
 
 #TO DO
 # handling generators appropriately, these interfere with my checks
-# improve representation and __str__ methods
-# equality operator
 # ColTable construction currently requires 2xmemory of data and finishes with a shallow copy of the data
 
 
 class ColTable(object):
-    """A simple table class that supports index and column indexing.
-    Stores data by columns."""    
+    """A simple table classes written in pure python. It allows us to
+    index the data either by row index (integer) or by column (text label or
+    anything hashable that isn't an integer).
+
+    Data is stored by column. This class uses an OrderedDict internally to 
+    store the columns. It can be accessed via the 'cols' attribute. Duplicate
+    column names are not supported.
+
+    Assignments and insertions are checked for compatibility with the Table's
+    shape but it is possible to mutate a column's data and corrupt the table.
+    The method validate() checks that all columns have the same length.
+
+    Warning: ColTable does not coerce the data into lists although the methods
+    insert(), append() and pop() assume that all of the columns are lists.
+    Also assignment by integer index won't work if any of the columns have an
+    immutable datatype. Columns are not coerced so that the user can keep them
+    as tuples, numpy arrays ...
+    """    
     def __init__(self, *args, **kwargs):
         """Takes the same input as a dict type but each value should be a
         sequence of the same length.
