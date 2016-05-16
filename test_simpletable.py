@@ -4,22 +4,19 @@
 
 import unittest2 as unittest
 import simpletable
-import sqlite3
+import csv
 import os
 import copy
 
 def get_country_data():
-    modulepath = os.path.dirname(__file__)
-    with sqlite3.connect(os.path.join(modulepath,'country_codes.sqlite')) as conn:
-        cur = conn.cursor()
-        cur.execute("SELECT * FROM Countries;")
-        result = cur.fetchall()
-        cur.close()
-    return result
+    modulepath = os.path.dirname(__file__)       
+    with open(os.path.join(modulepath,'countries.csv')) as csvfile:
+        reader = csv.reader(csvfile)
+        header = reader.next()
+        data = list(reader)
+    return header, data
 
-data = get_country_data()
-header = ['iso2','iso3','num','name','pop']
-
+header, data = get_country_data()
 
 
 class TestTable(unittest.TestCase):
