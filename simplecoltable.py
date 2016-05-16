@@ -25,7 +25,7 @@ class ColTable(object):
         """Takes the same input as a dict type but each value should be a
         sequence of the same length.
         """
-        self.title = 'unamed'
+        self.title = 'unnamed'
         cols = OrderedDict(*args,**kwargs)
         # shallow copy each column's collection so that original dataset is not mutated so easily:
         self.cols = OrderedDict((k,copy.copy(v)) for k,v in cols.items()) 
@@ -51,8 +51,14 @@ class ColTable(object):
     def __repr__(self):
         return 'ColTable(%r)' %(self.cols)
         
-    #def __str__(self):
-    #   pass
+    def __str__(self):
+        def truncated(lst):
+            tmp = lst[:8]
+            tmp[7] = '...'
+            return tmp
+        contents = '\n    '.join('%r: %r' %(k,v) for k,v in self.cols.items())
+        header = 'ColTable(title = %r,'
+        return header + '\n    '+contents + ')'
         
     def validate(self):
         """checks that all columns have the same length"""
