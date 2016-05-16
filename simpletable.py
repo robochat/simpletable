@@ -135,7 +135,7 @@ class Table(list):
     def append(self,obj):
         """L.append(object) -- append row to end"""
         width = self.width
-        if width and len(obj) != width: raise ValueError('new row is not the correct length for dataset: %r' %obj)
+        if width and len(obj) != width: raise ValueError('new row is not the correct length for dataset: %r' %(obj,))
         super(Table,self).append(obj)
         
     def validate(self):
