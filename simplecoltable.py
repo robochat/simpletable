@@ -24,7 +24,9 @@ class ColTable(object):
         sequence of the same length.
         """
         self.title = 'unamed'
-        self.cols = OrderedDict(*args,**kwargs)
+        cols = OrderedDict(*args,**kwargs)
+        # shallow copy each column's collection so that original dataset is not mutated so easily:
+        self.cols = OrderedDict((k,copy.copy(v)) for k,v in cols.items()) 
         self.validate()
     
     @property
