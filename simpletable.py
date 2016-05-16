@@ -9,7 +9,6 @@ normal operations and can export and import data to many formats.
 
 # TO DO
 # __setitem__, __setslice__ and insertcol won't work with generators
-# too many if/else not enough try: except:
 
 class Table(list):
     """A very simple table class that supports index and column indexing.
@@ -110,10 +109,12 @@ class Table(list):
         #self.validate()
 
     def __repr__(self):
-        try:
-            return '<%s table: %s: %d entries>' % (self.title or 'unnamed',','.join(self.headers),len(self))
-        except AttributeError:
-            return '<table object>'
+        return 'Table(%r,title = %r,headers = %r)' %(list(self),self.title,self.headers)
+        
+    def __str__(self):
+        indent = '    '
+        contents = ('\n' + indent).join(repr(row) for row in self)
+        return 'Table(\n    %s,\n    title = %r,\n    headers = %r)' %(contents,self.title,self.headers)
             
     @property
     def width(self):
