@@ -18,8 +18,8 @@ this but it is not enforced, in order to allow the user to use the datastructure
 as they see fit. 
 
 For instance, each column is likely to have a single data type and so columns
-might be stored as numpy arrays in a `ColTable` except that then the methods 
-- insert(), append() and pop() - will not work.
+might be stored as numpy arrays in a `ColTable` except that then the methods
+insert(), append() and pop() will not work.
 
 Usage
 -----
