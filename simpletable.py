@@ -5,6 +5,8 @@ index the data either by row index (integer) or by column (text label).
 The code is inspired by the module tablib but is simplified. For
 instance tablib provides automatic validation of insertions etc during 
 normal operations and can export and import data to many formats.
+
+Copyright (C) 2016 Robert Steed
 """
 
 # TO DO

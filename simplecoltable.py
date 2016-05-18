@@ -2,6 +2,8 @@
 """A simple table classes written in pure python. It allows us to
 index the data either by row index (integer) or by column (text label or
 anything hashable that isn't an integer).
+
+Copyright (C) 2016 Robert Steed
 """
 #from ordereddict import OrderedDict
 from collections import OrderedDict
