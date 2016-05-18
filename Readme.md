@@ -12,14 +12,13 @@ number of rows or columns, otherwise an exception is thrown.
 
 The `Table` class inherits from a list and so mostly acts like a list except for
 it's extended indexing abilities, data is stored by row. The `ColTable` class 
-uses an OrderedDict internally and stores data by column. The classes expect the
-data to be stored in lists and their methods for updating the dataset depend upon
-this but it is not enforced, in order to allow the user to use the datastructures
-as they see fit. 
+uses an OrderedDict internally and stores data by column. 
 
-For instance, each column is likely to have a single data type and so columns
-might be stored as numpy arrays in a `ColTable` except that then the methods
-insert(), append() and pop() will not work.
+The classes expect the data to be stored in lists and their methods for updating 
+the dataset depend upon this but it is not enforced, this allows the user to use 
+the datastructures as they see fit. For instance, each column is likely to have 
+a single data type and so columns might be stored as numpy arrays in a `ColTable`
+(except that the methods insert(), append() and pop() will then not work).
 
 Usage
 -----
