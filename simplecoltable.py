@@ -61,16 +61,18 @@ class ColTable(object):
         return len(self.cols)
     
     def __repr__(self):
-        return 'ColTable(%r)' %(self.cols)
+        #return 'ColTable(%r)' %(self.cols)
+        contents = ', '.join('(%r, %r)' %(k,v) for k,v in self.cols.items())
+        return 'ColTable(['+contents + '])' 
         
     def __str__(self):
         def truncated(lst):
             tmp = lst[:8]
             tmp[7] = '...'
             return tmp
-        contents = '\n    '.join('%r: %r' %(k,v) for k,v in self.cols.items())
-        header = 'ColTable(title = %r,'
-        return header + '\n    '+contents + ')'
+        contents = ',\n    '.join('%r: %r' %(k,v) for k,v in self.cols.items())
+        header = '<ColTable( title = %r,' %self.title
+        return header + '\n    '+contents + ')>'
         
     def validate(self):
         """checks that all columns have the same length"""
