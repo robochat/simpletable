@@ -4,9 +4,13 @@ simpletable - a simple table datastructure
 Introduction
 ------------
 
-simpletable consists of two class - `Table` and `ColTable` which can be used to
+Simpletable is a tiny datastructure library for python2 (not python3 currently)
+that provides two versions of a table class i.e. a way of storing data in rows
+and columns.
+
+simpletable consists of two classes - `Table` and `ColTable` which can be used to
 store a regular array of data. This data can then be indexed using an integer to
-access each row or by column name/key to access the column. Methods exist to add
+access each row or by column name/key to access the columns. Methods exist to add
 more rows or columns; the classes check that the new data has the appropriate
 number of rows or columns, otherwise an exception is thrown.
 
