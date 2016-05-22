@@ -14,7 +14,7 @@ def get_country_data():
     modulepath = os.path.dirname(__file__)       
     with open(os.path.join(modulepath,'countries.csv')) as csvfile:
         reader = csv.reader(csvfile)
-        header = reader.next()
+        header = next(reader)
         data = list(reader)
     return header, data
 

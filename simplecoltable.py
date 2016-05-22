@@ -213,7 +213,7 @@ class ColTable(object):
     def extend(self, iterable):
         ""extend table by appending rows from the iterable""
         widths = (len(row) for row in iterable) #using up iterable!!!
-        width = widths.next()
+        width = next(widths)
         if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns') 
         if width != len(self.cols): raise ValueError('row insert does not have enough columns')
         if isinstance(iterable,Mappable):
@@ -234,7 +234,7 @@ def rows2cols(iterable):
     columnar data."""
     #checks
     widths = (len(row) for row in iterable)
-    width = widths.next()
+    width = next(widths)
     if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns')
     #
     result = [[row[i] for row in iterable] for i in range(width)]
@@ -257,7 +257,7 @@ def rows2dict(headers,iterable):
     """
     #checks
     widths = (len(row) for row in iterable)
-    width = widths.next()
+    width = next(widths)
     if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns')
     if len(headers) != width: raise ValueError('headers amd dataset are not the same width')
     #
@@ -273,7 +273,7 @@ if __name__ == "__main__":
         modulepath = os.path.dirname(__file__)       
         with open(os.path.join(modulepath,'countries.csv')) as csvfile:
             reader = csv.reader(csvfile)
-            header = reader.next()
+            header = next(reader)
             data = list(reader)
         return header, data
 
