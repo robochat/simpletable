@@ -4,7 +4,7 @@ simpletable - a simple table datastructure
 Introduction
 ------------
 
-Simpletable is a tiny datastructure library for python2 (not python3 currently)
+Simpletable is a tiny datastructure library for python2 (and python3)
 that provides two versions of a table class i.e. a way of storing data in rows
 and columns.
 
