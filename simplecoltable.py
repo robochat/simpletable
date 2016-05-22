@@ -47,7 +47,7 @@ class ColTable(object):
     
     @property
     def headers(self):
-        return self.cols.keys()
+        return list(self.cols) #get list of keys
         
     @headers.setter
     def headers(self,newheaders):
