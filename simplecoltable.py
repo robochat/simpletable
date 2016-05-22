@@ -130,7 +130,7 @@ class ColTable(object):
             except ValueError:
                 raise KeyError('column does not exist')
         else:
-            for h,col in self.cols.iteritems():
+            for h,col in self.cols.items():
                 del col[key]
                 self.cols[h] = col
     
@@ -177,14 +177,14 @@ class ColTable(object):
     def insert(self, index, row):
         """insert row before index"""
         if isinstance(row,Mapping):
-            for key,col in self.cols.iteritems():
+            for key,col in self.cols.items():
                 #Add code here to handle row types other than list
                 col.insert(index,row[key])
                 #self.cols[key] = col 
         else: #not a mappable so try sequence-type code.
             #row = list(row) #handles case where value is an generator
             if len(row) != len(self.cols): raise ValueError('appended row does not have correct number of columns')
-            for (key,col),v in zip(self.cols.iteritems(),row):
+            for (key,col),v in zip(self.cols.items(),row):
                 #Add code here to handle row types other than list
                 col.insert(index,v)
                 #self.cols[key] = col
@@ -192,14 +192,14 @@ class ColTable(object):
     def append(self, row):
         """append a row to the table"""
         if isinstance(row,Mapping):
-            for key,col in self.cols.iteritems():
+            for key,col in self.cols.items():
                 #Add code here to handle row types other than list
                 col.append(row[key])
                 #self.cols[key] = col 
         else: #not a mappable so try sequence-type code.
             #row = list(row) #handles case where value is an generator
             if len(row) != len(self.cols): raise ValueError('appended row does not have correct number of columns')
-            for (key,col),v in zip(self.cols.iteritems(),row):
+            for (key,col),v in zip(self.cols.items(),row):
                 #Add code here to handle row types other than list
                 col.append(v)
                 #self.cols[key] = col
@@ -217,12 +217,12 @@ class ColTable(object):
         if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns') 
         if width != len(self.cols): raise ValueError('row insert does not have enough columns')
         if isinstance(iterable,Mappable):
-            for key,col in self.cols.iteritems():
+            for key,col in self.cols.items():
                 #Add code here to handle row types other than list
                 col.extend(row[key] for row in iterable)
                 #self.cols[key] = col            
         else:            
-            for i,(key,col) in enumerate(self.cols.iteritems()):
+            for i,(key,col) in enumerate(self.cols.items()):
                 #Add code here to handle row types other than list
                 col.extend([row[i] for row in iterable])
                 #self.cols[key] = col
