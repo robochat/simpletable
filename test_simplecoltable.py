@@ -255,7 +255,7 @@ class TestTable(unittest.TestCase):
         tab = simplecoltable.ColTable(data2)
         width = tab.width
         length = len(tab)
-        col = tab.headers[0]
+        col = tuple(tab.headers)[0]
         del tab[col]
         self.assertEqual(len(tab),length)
         self.assertEqual(tab.width,width-1)

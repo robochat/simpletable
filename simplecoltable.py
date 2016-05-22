@@ -145,7 +145,7 @@ class ColTable(object):
         
     def __len__(self):
         """number of rows in the dataset"""
-        return len(self.cols.values()[0]) #assuming that collection is self-consistant
+        return len(next(iter(self.cols.values()))) #assuming that collection is self-consistant
         
     def __eq__(self,other):
         if (type(other) == type(self)
