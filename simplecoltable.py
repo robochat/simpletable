@@ -145,7 +145,10 @@ class ColTable(object):
         
     def __len__(self):
         """number of rows in the dataset"""
-        return len(next(iter(self.cols.values()))) #assuming that collection is self-consistant
+        try:
+            return len(next(iter(self.cols.values()))) #assuming that collection is self-consistant
+        except StopIteration:
+            return 0
         
     def __eq__(self,other):
         if (type(other) == type(self)
@@ -234,7 +237,9 @@ def rows2cols(iterable):
     columnar data."""
     #checks
     widths = (len(row) for row in iterable)
-    width = next(widths)
+    try: width = next(widths)
+    except StopIteration as e:
+        raise ValueError('function received zero length input')
     if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns')
     #
     result = [[row[i] for row in iterable] for i in range(width)]
@@ -257,7 +262,9 @@ def rows2dict(headers,iterable):
     """
     #checks
     widths = (len(row) for row in iterable)
-    width = next(widths)
+    try: width = next(widths)
+    except StopIteration as e:
+        raise ValueError('function received zero length input')
     if not all(w == width for w in widths): raise ValueError('not all rows have the same number of columns')
     if len(headers) != width: raise ValueError('headers amd dataset are not the same width')
     #

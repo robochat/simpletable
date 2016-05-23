@@ -54,6 +54,7 @@ class TestTable(unittest.TestCase):
         tab = simplecoltable.ColTable()
         tab.width
         tab.validate()
+        self.assertEqual(len(tab),0)
         tab.headers = header
         tab.append(data[0])
         #tab.extend(data[1:10]) #extend not implemented
